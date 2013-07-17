@@ -1,4 +1,5 @@
 Media: YouTube Custom Poster Frame
+==================================
 
 This module adds the ability to use a custom poster frame image for
 YouTube videos in climate.gov's "News & Features Video" content type.
