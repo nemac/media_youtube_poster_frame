@@ -1,0 +1,5 @@
+name = Media: YouTube Poster Frame
+description = Allows custom poster frame images on News&Features YouTube videos
+core = 7.x
+package = UNCA/NEMAC
+version = "7.x-1.1"

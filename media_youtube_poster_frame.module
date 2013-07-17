@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * Implements hook_preprocess_field
+ *
+ * Add a "more" link to body summaries, excepting "teaser" view mode
+ * because that's the mode used for rotator displays that already have
+ * a "read more" link.
+ */
+
+function media_youtube_poster_frame_init() {
+  drupal_add_css($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.css");
+  drupal_add_js($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.js");
+}
+
+
+function media_youtube_poster_frame_theme_registry_alter(&$theme_registry) {
+  $theme_registry["media_youtube_video"]["path"] = drupal_get_path('module', 'media_youtube_poster_frame');
+}
+
+function media_youtube_poster_frame_preprocess_field(&$variables) {
+  global $base_path;
+  $element = $variables['element'];
+  if (($element['#bundle'] == 'news_features_video') &&
+            ($element['#field_name'] == 'field_featured_video')) {
+    global $media_youtube_poster_frame;
+    $media_youtube_poster_frame = array('present' => false);
+    if ($element['#object'] &&
+        $element['#object']->field_poster_frame_image &&
+        $element['#object']->field_poster_frame_image['und'] &&
+        $element['#object']->field_poster_frame_image['und']['0']) {
+      $pfi = $element['#object']->field_poster_frame_image['und'][0];
+      $media_youtube_poster_frame = array(
+                            'present'  => true,
+                            'url'      => file_create_url($pfi['uri']),
+                            'fid'      => $pfi['fid'],
+                            'filename' => $pfi['filename']
+                            );
+    }
+
+    //drupal_add_css($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.css");
+    //drupal_add_js($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.js");
+
+    //    $file = file_load($pfi['fid']);
+    //dsm($file);
+    //dsm($pfi);
+    //var_dump(get_defined_vars());
+    //    dsm(print_r($variables,true));
+  }
+}

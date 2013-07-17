@@ -1,0 +1,30 @@
+.media-youtube-poster-frame-wrapper {
+  position: relative;
+  background: #000000;
+}
+
+.media-youtube-poster-frame-video {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background: #000000;
+  display: none;
+}
+
+.media-youtube-poster-frame {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background: #000000;
+}
+
+.media-youtube-poster-frame-play-button {
+  position: absolute;
+}
+
+.media-youtube-poster-frame-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
