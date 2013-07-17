@@ -20,6 +20,7 @@
 
 .media-youtube-poster-frame-play-button {
   position: absolute;
+  visibility: hidden;
 }
 
 .media-youtube-poster-frame-img {

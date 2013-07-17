@@ -46,6 +46,7 @@
 
                 play_button_black_img_src = $play_button.attr('src');
                 play_button_red_img_src = play_button_black_img_src.replace('black', 'red');
+                $play_button.css('visibility', 'visible');
 
                 // Establish the hover and click behavior of the poster frame
                 $poster_frame

@@ -21,9 +21,14 @@
  *
  */
 global $media_youtube_poster_frame, $base_path;
+if ($media_youtube_poster_frame && $media_youtube_poster_frame[$uri]) {
+  $pf = $media_youtube_poster_frame[$uri];
+} else {
+  $pf = null;
+}
 ?>
 <div class="<?php print $classes; ?> media-youtube-<?php print $id; ?>">
-<?php if ($media_youtube_poster_frame && $media_youtube_poster_frame['present']): ?>
+<?php if ($pf): ?>
   <div class="media-youtube-poster-frame-wrapper">
     <div class="media-youtube-poster-frame-video">
       <iframe class="media-youtube-player" <?php print $api_id_attribute; ?>width="<?php print $width; ?>"
@@ -31,7 +36,7 @@ global $media_youtube_poster_frame, $base_path;
        frameborder="0" allowfullscreen><?php print $alternative_content; ?></iframe>
     </div>
     <div class="media-youtube-poster-frame">
-    <img class="media-youtube-poster-frame-img" style="width:<?php print $width; ?>px; height:<?php print $height; ?>px; max-width:<?php print $width; ?>px; max-height:<?php print $height; ?>px" src="<?php print $media_youtube_poster_frame['url'];?>">
+    <img class="media-youtube-poster-frame-img" style="width:<?php print $width; ?>px; height:<?php print $height; ?>px; max-width:<?php print $width; ?>px; max-height:<?php print $height; ?>px" src="<?php print $pf['url'];?>">
       <img class="media-youtube-poster-frame-play-button" src="<?php printf('%s%s/youtube-play-button-black.png',  $base_path, drupal_get_path('module', 'media_youtube_poster_frame'));?>">
     </div>
   </div>

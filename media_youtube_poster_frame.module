@@ -1,50 +1,65 @@
 <?php
 
-/**
- * Implements hook_preprocess_field
- *
- * Add a "more" link to body summaries, excepting "teaser" view mode
- * because that's the mode used for rotator displays that already have
- * a "read more" link.
- */
-
 function media_youtube_poster_frame_init() {
+  // NOTE: these css and js files really only need to be included on pages that include a
+  // media_youtube video, but for some reason calling drupal_add_css() and drupal_add_js() from
+  // media_youtube_poster_frame_preprocess_field() below does not seem to work when js/css
+  // aggregation are turned on.  So until I can figure out how to do it otherwise, we load this
+  // module's css and js files for every page:
   drupal_add_css($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.css");
   drupal_add_js($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.js");
 }
 
-
+/**
+ * Implements hook_theme_registry_alter()
+ *
+ */
 function media_youtube_poster_frame_theme_registry_alter(&$theme_registry) {
+  // override the location where media_youtube template files are found, so that this module's
+  // copy of media-youtube-video.tpl.php will override the one that comes with media_youtube
+  // module:
   $theme_registry["media_youtube_video"]["path"] = drupal_get_path('module', 'media_youtube_poster_frame');
 }
 
+/**
+ * Implements hook_preprocess_field()
+ */
 function media_youtube_poster_frame_preprocess_field(&$variables) {
   global $base_path;
   $element = $variables['element'];
+
+  /*
+   * If this is a field_featured_video field on a node of type news_features, store the url
+   * of the field_poster_frame_image in the globl variable $media_youtube_poster_frame, keyed
+   * by the youtube uri of the video.  Using a global variable like this is a dirty hack,
+   * but so far I haven't been able to figure out a better way to get data from this point
+   * in the code into the media-youtube-video.tpl.php template!!
+   */
   if (($element['#bundle'] == 'news_features_video') &&
-            ($element['#field_name'] == 'field_featured_video')) {
+      ($element['#field_name'] == 'field_featured_video')) {
     global $media_youtube_poster_frame;
-    $media_youtube_poster_frame = array('present' => false);
+    if (! $media_youtube_poster_frame) {
+      $media_youtube_poster_frame = array();
+    }
     if ($element['#object'] &&
         $element['#object']->field_poster_frame_image &&
         $element['#object']->field_poster_frame_image['und'] &&
-        $element['#object']->field_poster_frame_image['und']['0']) {
+        $element['#object']->field_poster_frame_image['und']['0'] &&
+        $element['#object']->field_featured_video &&
+        $element['#object']->field_featured_video["und"] &&
+        $element['#object']->field_featured_video["und"][0] &&
+        $element['#object']->field_featured_video["und"][0]["file"] &&
+        $element['#object']->field_featured_video["und"][0]["file"]->uri) {
       $pfi = $element['#object']->field_poster_frame_image['und'][0];
-      $media_youtube_poster_frame = array(
-                            'present'  => true,
-                            'url'      => file_create_url($pfi['uri']),
-                            'fid'      => $pfi['fid'],
-                            'filename' => $pfi['filename']
-                            );
+      $youtube_uri = $element['#object']->field_featured_video["und"][0]["file"]->uri;
+      $media_youtube_poster_frame[$youtube_uri] = array(
+        'url' => file_create_url($pfi['uri'])
+      );
+      //calling these here does not seem to work when css/js aggregation are turned on, so they're commented out
+      //for now, replaced by the same calls in media_youtube_poster_frame_init() above.
+      //drupal_add_css($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.css");
+      //drupal_add_js($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.js");
     }
 
-    //drupal_add_css($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.css");
-    //drupal_add_js($base_path . drupal_get_path('module', 'media_youtube_poster_frame') . "/media_youtube_poster_frame.js");
-
-    //    $file = file_load($pfi['fid']);
-    //dsm($file);
-    //dsm($pfi);
-    //var_dump(get_defined_vars());
-    //    dsm(print_r($variables,true));
   }
 }
